@@ -312,9 +312,9 @@ export default class ObsidianAI extends Plugin {
 				if (activeView) { 
 					let fileContents = view.editor.getSelection();
 					// Call the corresponding prompt
-					let response = this.obsidianAI.improveWriting(await fileContents);
-					console.log(editor.getSelection());
-					editor.replaceSelection(await response || "");
+					this.obsidianAI.improveWriting(await fileContents, (data: string) => {
+						editor.replaceSelection(data);
+					});
 				}
 			}
 		});
