@@ -5,14 +5,16 @@ export class ChatGPT {
     openai: any;
     apiKey: string;
     baseUrl: string;
+    model: string;
 
-    constructor(apiKeyParam: string, baseUrlParam?: string) {
+    constructor(apiKeyParam: string, baseUrlParam?: string, modelParam?: string) {
         this.apiKey = apiKeyParam;
         this.baseUrl = (baseUrlParam ? `${baseUrlParam}/v1/chat/completions` : 'https://api.openai.com/v1/chat/completions');
+        this.model = modelParam || 'gpt-3.5-turbo';
     }
 
     public async createCompletion(params = {}) {
-        const params_ = { ...params };
+        const params_ = { ...params, model: this.model };
         try {
             const result = await fetch(this.baseUrl, {
                 method: 'POST',
@@ -72,7 +74,6 @@ export class ChatGPT {
 
         try {
             return await this.createCompletion({
-                model: "gpt-3.5-turbo",
                 messages: [
                     { "role": "system", "content": `"${prompt}"` },
                     { "role": "user", "content": `"${file}"` }],

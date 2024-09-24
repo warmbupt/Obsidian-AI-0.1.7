@@ -7,11 +7,13 @@ import {ChatGPT} from './ChatGPT';
 interface ObsidianAISettings {
 	apiKey: string;
 	baseUrl: string; // 添加 baseUrl 设置
+	model: string; // 添加 model 设置
 }
 
 export const DEFAULT_SETTINGS: ObsidianAISettings = {
 	apiKey: 'sk-XXXXXXXXX',
-	baseUrl: 'https://api.openai.com/v1/chat/completions' // 默认 baseUrl
+	baseUrl: 'https://api.openai.com/v1/chat/completions', // 默认 baseUrl
+	model: 'gpt-3.5-turbo' // 默认 model
 }
 
 export default class ObsidianAI extends Plugin {
@@ -405,7 +407,7 @@ export default class ObsidianAI extends Plugin {
 
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
-		this.obsidianAI = new ChatGPT(this.settings.apiKey, this.settings.baseUrl);
+		this.obsidianAI = new ChatGPT(this.settings.apiKey, this.settings.baseUrl, this.settings.model);
 	}
 
 	async saveSettings() {
@@ -447,6 +449,17 @@ class ObsidianAISettingTab extends PluginSettingTab {
 				.setValue(this.plugin.settings.baseUrl)
 				.onChange(async (value) => {
 					this.plugin.settings.baseUrl = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Model')
+			.setDesc('Set the model for the OpenAI API (e.g., gpt-3.5-turbo)')
+			.addText(text => text
+				.setPlaceholder('Model')
+				.setValue(this.plugin.settings.model)
+				.onChange(async (value) => {
+					this.plugin.settings.model = value;
 					await this.plugin.saveSettings();
 				}));
 	}
